@@ -5,6 +5,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/coreos/ktestutil/utils"
+
 	"os"
 )
 
@@ -12,14 +14,14 @@ func TestS3Output(t *testing.T) {
 	empty := func() error {
 		return fmt.Errorf("format string")
 	}
-	retry(10, time.Second*10, empty)
+	utils.Retry(10, time.Second*10, empty)
 
 	t.Run("Pod", testS3Pod)
 	t.Run("Service", testS3Service)
 }
 
 func testS3Pod(t *testing.T) {
-	if err := cr.OutputToS3(os.Getenv("AWS_ACCESS_KEY_ID"), os.Getenv("AWS_SECRET_ACCESS_KEY"), os.Getenv("AWS_REGION"), "abhinav-log-collector", "a1"); err != nil {
+	if err := cr.SetOutputToS3(os.Getenv("AWS_ACCESS_KEY_ID"), os.Getenv("AWS_SECRET_ACCESS_KEY"), os.Getenv("AWS_REGION"), "abhinav-log-collector", "a1"); err != nil {
 		t.Fatalf("error connecting to s3 %v", err)
 	}
 
@@ -35,7 +37,7 @@ func testS3Pod(t *testing.T) {
 }
 
 func testS3Service(t *testing.T) {
-	if err := cr.OutputToS3(os.Getenv("AWS_ACCESS_KEY_ID"), os.Getenv("AWS_SECRET_ACCESS_KEY"), os.Getenv("AWS_REGION"), "abhinav-log-collector", "a1"); err != nil {
+	if err := cr.SetOutputToS3(os.Getenv("AWS_ACCESS_KEY_ID"), os.Getenv("AWS_SECRET_ACCESS_KEY"), os.Getenv("AWS_REGION"), "abhinav-log-collector", "a1"); err != nil {
 		t.Fatalf("error connecting to s3 %v", err)
 	}
 

@@ -7,13 +7,15 @@ import (
 	"os"
 	"testing"
 	"time"
+
+	"github.com/coreos/ktestutil/utils"
 )
 
 func TestLocalOutput(t *testing.T) {
 	empty := func() error {
 		return fmt.Errorf("format string")
 	}
-	retry(10, time.Second*10, empty)
+	utils.Retry(10, time.Second*10, empty)
 
 	t.Run("Pod", testPod)
 	t.Run("Service", testService)
@@ -24,7 +26,9 @@ func testPod(t *testing.T) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if err := cr.OutputToLocal(dir); err != nil {
+	defer os.RemoveAll(dir)
+
+	if err := cr.SetOutputToLocal(dir); err != nil {
 		t.Fatalf("error init local output %v", err)
 	}
 
@@ -37,8 +41,6 @@ func testPod(t *testing.T) {
 		t.Fatalf("alteast one container exists but not found")
 	}
 	t.Log(results)
-
-	os.RemoveAll(dir)
 }
 
 func testService(t *testing.T) {
@@ -46,7 +48,9 @@ func testService(t *testing.T) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if err := cr.OutputToLocal(dir); err != nil {
+	defer os.RemoveAll(dir)
+
+	if err := cr.SetOutputToLocal(dir); err != nil {
 		t.Fatalf("error init local output %v", err)
 	}
 
@@ -59,6 +63,4 @@ func testService(t *testing.T) {
 		t.Fatalf("alteast one service exists but not found")
 	}
 	t.Log(results)
-
-	os.RemoveAll(dir)
 }
